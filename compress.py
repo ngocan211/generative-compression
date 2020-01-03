@@ -1,23 +1,22 @@
 #!/usr/bin/python3
-import tensorflow as tf
-import numpy as np
-import pandas as pd
-import time, os, sys
 import argparse
+import os
+import time
+import numpy as np
+import tensorflow as tf
 
-# User-defined
-from network import Network
-from utils import Utils
-from data import Data
-from model import Model
 from config import config_test, directories
+from model import Model
+# User-defined
+from utils import Utils
 
-tf.logging.set_verbosity(tf.logging.ERROR)
+
+# tf.logging.set_verbosity(tf.logging.ERROR)
 
 def single_compress(config, args):
     start = time.time()
     ckpt = tf.train.get_checkpoint_state(directories.checkpoints)
-    assert (ckpt.model_checkpoint_path), 'Missing checkpoint file!'
+    assert ckpt.model_checkpoint_path, 'Missing checkpoint file!'
 
     if config.use_conditional_GAN:
         print('Using conditional GAN')
@@ -70,11 +69,14 @@ def main(**kwargs):
     parser.add_argument("-i", "--image_path", help="path to image to compress", type=str)
     parser.add_argument("-sm", "--semantic_map_path", help="path to corresponding semantic map", type=str)
     parser.add_argument("-o", "--output_path", help="path to output image", type=str)
-    parser.add_argument("-ds", "--dataset", default="cityscapes", help="choice of training dataset. Currently only supports cityscapes/ADE20k", choices=set(("cityscapes", "ADE20k")), type=str)
+    parser.add_argument("-ds", "--dataset", default="cityscapes",
+                        help="choice of training dataset. Currently only supports cityscapes/ADE20k",
+                        choices=set(("cityscapes", "ADE20k")), type=str)
     args = parser.parse_args()
 
     # Launch training
     single_compress(config_test, args)
+
 
 if __name__ == '__main__':
     main()
